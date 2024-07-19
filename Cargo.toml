@@ -1,5 +1,7 @@
 [package]
 name = "tokio-par-stream"
+authors = ["Vrtgs"]
+repository = "https://github.com/Vrtgs/tokio-par-stream.git"
 version = "0.1.0"
 edition = "2021"
 
