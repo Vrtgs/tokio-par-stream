@@ -32,8 +32,8 @@ impl<F: Future> Debug for FuturesParallelOrdered<F> {
 impl<Fut: Future> FuturesParallelOrdered<Fut> {
     /// Constructs a new, empty `FuturesOrdered`
     ///
-    /// The returned [`futures::stream::FuturesOrdered`] does not contain any futures and, in
-    /// this state, [`futures::stream::FuturesOrdered::poll_next`] will return
+    /// The returned [`FuturesParallelOrdered`] does not contain any futures and, in
+    /// this state, [`FuturesParallelOrdered::poll_next`] will return
     /// [`Poll::Ready(None)`](Poll::Ready).
     pub fn new() -> Self {
         Self {
@@ -65,10 +65,12 @@ where
 {
     /// Pushes a future to the back of the queue.
     ///
-    /// This function submits the given future to the internal set for managing.
-    /// This function will not call [`poll`](Future::poll) on the submitted
-    /// future. The caller must ensure that [`futures::stream::FuturesOrdered::poll_next`] is
-    /// called in order to receive task notifications.
+    /// This method adds the given future to the set. This method may
+    /// call [`poll`](Future::poll) on the submitted future.
+    /// and will spawn in it on the current executor
+    ///
+    /// tasks will be scheduled on the same runtime that the [`FuturesParallelOrdered`]
+    /// was originally made in
     pub fn push_back(&mut self, future: Fut) {
         let wrapped = OrderWrapper {
             data: future,
@@ -80,11 +82,12 @@ where
 
     /// Pushes a future to the front of the queue.
     ///
-    /// This function submits the given future to the internal set for managing.
-    /// This function will not call [`poll`](Future::poll) on the submitted
-    /// future. The caller must ensure that [`futures::stream::FuturesOrdered::poll_next`] is
-    /// called in order to receive task notifications. This future will be
-    /// the next future to be returned complete.
+    /// This method adds the given future to the set. This method may
+    /// call [`poll`](Future::poll) on the submitted future.
+    /// and will spawn in it on the current executor
+    ///
+    /// tasks will be scheduled on the same runtime that the [`FuturesParallelOrdered`]
+    /// was originally made in
     pub fn push_front(&mut self, future: Fut) {
         let wrapped = OrderWrapper {
             data: future,
@@ -147,11 +150,9 @@ where
     where
         T: IntoIterator<Item = Fut>,
     {
-        let acc = Self::new();
-        iter.into_iter().fold(acc, |mut acc, item| {
-            acc.push_back(item);
-            acc
-        })
+        let mut ret = FuturesParallelOrdered::new();
+        ret.extend(iter);
+        ret
     }
 }
 
