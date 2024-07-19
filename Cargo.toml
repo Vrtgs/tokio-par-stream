@@ -2,6 +2,8 @@
 name = "tokio-par-stream"
 authors = ["Vrtgs"]
 repository = "https://github.com/Vrtgs/tokio-par-stream.git"
+license = "MIT OR Apache-2.0"
+description = "parallel streams powered by tokio"
 version = "0.1.0"
 edition = "2021"
 
