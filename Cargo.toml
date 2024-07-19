@@ -1,0 +1,12 @@
+[package]
+name = "tokio-par-stream"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1", features = ["rt"] }
+futures = "0.3"
+pin-project-lite = "0.2"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt", "macros"] }
